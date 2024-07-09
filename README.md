@@ -2,15 +2,17 @@
 
 This project implements the game mechanics of the game boardgame [Splendor](https://en.wikipedia.org/wiki/Splendor_(game)).
 
+- It is not possible to play the game in this current state
+
 :warning: This project is intended for learning pourpouses only.
 
 ## License
 
 Licensed under either of
 
-* Apache License, Version 2.0
+- Apache License, Version 2.0
    ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-* MIT license
+- MIT license
    ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
