@@ -4,7 +4,7 @@ This project implements the game mechanics of the game boardgame [Splendor](http
 
 - It is not possible to play the game in this current state
 
-:warning: This project is intended for learning pourpouses only.
+:warning: This project is intended for learning purposes only.
 
 ## License
 

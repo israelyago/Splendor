@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 use super::bank::Funds;
 
 pub const NOBLE_VICTORY_POINTS: u8 = 3;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Noble {
     pub id: NobleId,
     pub cost: Funds,
@@ -14,7 +16,7 @@ impl Noble {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NobleId {
     id: u8,
 }

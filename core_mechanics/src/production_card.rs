@@ -1,16 +1,18 @@
+use serde::{Deserialize, Serialize};
+
 use super::bank;
 use super::board::BuyOperationFail;
 use super::piece::Piece;
 use super::player;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ProductionCard {
     pub cost: bank::Funds,
     pub produces: Piece,
     pub victory_points: Option<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CardId {
     id: u8,
 }
@@ -21,7 +23,7 @@ impl CardId {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Identifiable<T, IdType = u8> {
     pub uid: IdType,
     pub data: T,

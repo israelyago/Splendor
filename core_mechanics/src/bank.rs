@@ -1,11 +1,13 @@
 use std::{collections::HashMap, ops::Add, ops::Sub};
 
+use serde::{Deserialize, Serialize};
+
 use super::bank;
 use super::piece::Piece;
 
 const MIN_PILE_SIZE_TO_COLLECT_TWO_EQUALS: u8 = 4;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CollectError {
     CollectedGolden,
     Collected2OfTheSameWithAnother,
@@ -55,7 +57,7 @@ impl CollectRequest {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Funds {
     pub funds: HashMap<Piece, u8>,
 }
@@ -418,12 +420,46 @@ mod tests {
         let funds = Funds::new(1, 2, 3, 4, 5, 6);
         let pieces = Vec::<Piece>::from(funds.clone());
 
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::Red).count(), 1);
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::Green).count(), 2);
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::Blue).count(), 3);
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::Brown).count(), 4);
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::White).count(), 5);
-        assert_eq!(pieces.iter().clone().filter(|p| *p == &Piece::Golden).count(), 6);
+        assert_eq!(
+            pieces.iter().clone().filter(|p| *p == &Piece::Red).count(),
+            1
+        );
+        assert_eq!(
+            pieces
+                .iter()
+                .clone()
+                .filter(|p| *p == &Piece::Green)
+                .count(),
+            2
+        );
+        assert_eq!(
+            pieces.iter().clone().filter(|p| *p == &Piece::Blue).count(),
+            3
+        );
+        assert_eq!(
+            pieces
+                .iter()
+                .clone()
+                .filter(|p| *p == &Piece::Brown)
+                .count(),
+            4
+        );
+        assert_eq!(
+            pieces
+                .iter()
+                .clone()
+                .filter(|p| *p == &Piece::White)
+                .count(),
+            5
+        );
+        assert_eq!(
+            pieces
+                .iter()
+                .clone()
+                .filter(|p| *p == &Piece::Golden)
+                .count(),
+            6
+        );
 
         let new_funds = Funds::new_from_list(pieces);
         assert_eq!(funds, new_funds);

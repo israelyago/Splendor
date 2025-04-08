@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 use std::slice::Iter;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 use super::bank::CollectError;
 use super::bank::Funds;
 use super::noble::NobleId;
@@ -19,32 +22,32 @@ use super::production_card;
 
 const WINNING_POINTS_THRESHOLD: u8 = 15;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Winner {
     Winner(PlayerId),
     Draw(Vec<PlayerId>),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RoundType {
     Normal,
     LastRound,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ProductionTier {
     One,
     Two,
     Three,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum ActionType {
     Normal,
     SelectNoble,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Action {
     PassTheTurn,
     CollectPieces(Vec<Piece>, Vec<Piece>),
@@ -54,7 +57,7 @@ pub enum Action {
     SelectNoble(NobleId),
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ActionFail {
     CannotReserveFromEmptyDeck,
     CardNotFoundOnBoard,
@@ -66,13 +69,13 @@ pub enum ActionFail {
     YouNeedToSelectNoble,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BuyOperationFail {
     NotEnoughFunds(Funds),
     CardNotFoundOnBoard,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Board {
     players: Vec<player::Player>,
     player_turn: usize,
@@ -155,11 +158,11 @@ impl Board {
         let winners: Vec<PlayerId> = possible_winners
             .into_iter()
             .filter(|p| p.production_cards.len() == least_amount_of_cards)
-            .map(|p| p.id.clone())
+            .map(|p| p.id)
             .collect();
 
         if winners.len() == 1 {
-            return Some(Winner::Winner(winners.get(0).unwrap().clone()));
+            return Some(Winner::Winner(*winners.first().unwrap()));
         }
 
         Some(Winner::Draw(winners))
@@ -209,8 +212,9 @@ impl Board {
         let player_remaining_funds =
             production_card::ProductionCard::buy(player.clone(), card_data.clone())
                 .map_err(ActionFail::InvalidBuyOperation)?;
-        
-        let used_coins = (player.funds - player_remaining_funds.clone()).expect("Player should have enough funds");
+
+        let used_coins = (player.funds - player_remaining_funds.clone())
+            .expect("Player should have enough funds");
         player.funds = player_remaining_funds;
         player.production_cards.push(card);
 
@@ -690,12 +694,11 @@ mod tests {
 
         let player_one = board.players.get(0).unwrap();
         assert_eq!(player_one.production_cards.len(), 2);
-        
+
         let expected_player_funds = bank::Funds::new(1, 0, 2, 0, 0, 0);
         let expected_bank_funds = bank::Funds::new(6, 7, 5, 7, 7, 5);
         assert_eq!(player_one.funds, expected_player_funds);
         assert_eq!(board.bank, expected_bank_funds);
-
     }
 
     #[test]
@@ -831,7 +834,7 @@ mod tests {
         // Assert that we can select noble
         let action = &Action::SelectNoble(NobleId::new(1));
         let board = Board::do_action(board, action).unwrap();
-        
+
         let player_one = board.players.get(0).unwrap();
         assert_eq!(player_one.nobles.len(), 1);
         assert_eq!(player_one.nobles.get(0).unwrap(), &noble_to_select);
@@ -839,7 +842,6 @@ mod tests {
         // Assert that we cannot select noble again (even if the board would normally allow)
         assert_eq!(board.action_needed, ActionType::Normal);
         assert_eq!(board.player_turn, 1);
-
     }
 
     #[test]

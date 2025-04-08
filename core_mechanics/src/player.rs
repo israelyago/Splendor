@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 use super::bank;
 use super::board;
 use super::noble::Noble;
@@ -9,7 +12,7 @@ use super::production_card;
 use super::production_card::CardId;
 use super::production_card::Identifiable;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlayerId {
     id: u8,
 }
@@ -18,9 +21,13 @@ impl PlayerId {
     pub fn new(id: u8) -> Self {
         Self { id }
     }
+
+    pub fn id(&self) -> u8 {
+        self.id
+    }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Player {
     pub id: PlayerId,
     pub funds: bank::Funds,
@@ -29,7 +36,7 @@ pub struct Player {
     pub nobles: Vec<Noble>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ReserveOperationFail {
     NotEnoughPieces(Vec<(Piece, u8)>),
     MaximumReservedCardsExceed,
